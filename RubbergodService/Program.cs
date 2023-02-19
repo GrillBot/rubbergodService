@@ -10,7 +10,8 @@ builder.Services
     .AddManagers()
     .AddDiscord()
     .AddEndpointsApiExplorer()
-    .AddSwaggerGen();
+    .AddSwaggerGen()
+    .AddDirectApi();
 builder.Services.AddControllers();
 
 var app = builder.Build();

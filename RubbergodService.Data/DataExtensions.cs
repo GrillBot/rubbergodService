@@ -3,6 +3,7 @@ using Discord.Rest;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RubbergodService.Data.DirectApi;
 using RubbergodService.Data.Discord;
 using RubbergodService.Data.Entity;
 using RubbergodService.Data.Managers;
@@ -42,6 +43,14 @@ public static class DataExtensions
             .AddSingleton<IDiscordClient>(client)
             .AddSingleton<DiscordLogManager>()
             .AddScoped<IDiscordManager, DiscordManager>();
+        return services;
+    }
+
+    public static IServiceCollection AddDirectApi(this IServiceCollection services)
+    {
+        services
+            .AddSingleton<IDirectApiClient, DirectApiClient>()
+            .AddScoped<DirectApiManager>();
         return services;
     }
 }
