@@ -43,4 +43,14 @@ public class UserManager
             member.AvatarUrl = user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl();
         }
     }
+
+    /// <summary>
+    /// Check if member exists in the database and download if need it and commit to the database.
+    /// </summary>
+    /// <param name="memberId">Member ID</param>
+    public async Task InitMemberAndCommitAsync(string memberId)
+    {
+        await InitMemberAsync(memberId);
+        await Repository.CommitAsync();
+    }
 }
