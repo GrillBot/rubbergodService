@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using RubbergodService.Data;
 using RubbergodService.Data.Discord;
 using RubbergodService.Data.Repository;
@@ -7,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure services
 builder.Services
-    .AddDatabase(builder.Configuration)
+    .AddDatabase(builder.Configuration, out var connectionString)
     .AddManagers()
     .AddDiscord()
     .AddEndpointsApiExplorer()
@@ -16,8 +17,12 @@ builder.Services
     .AddScoped<RequestCounterMiddleware>();
 builder.Services.AddControllers();
 
+builder.Services
+    .AddHealthChecks()
+    .AddNpgSql(connectionString);
+builder.Services.Configure<ForwardedHeadersOptions>(opt => opt.ForwardedHeaders = ForwardedHeaders.All);
+
 var app = builder.Build();
-app.UseMiddleware<RequestCounterMiddleware>();
 
 app.Services.GetRequiredService<DiscordLogManager>();
 using var scope = app.Services.CreateScope();
@@ -32,7 +37,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<RequestCounterMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();

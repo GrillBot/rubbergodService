@@ -13,12 +13,13 @@ namespace RubbergodService.Data;
 
 public static class DataExtensions
 {
-    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration, out string connectionString)
     {
-        var connectionString = configuration.GetConnectionString("Default");
+        var connString = configuration.GetConnectionString("Default")!;
+        connectionString = connString;
 
         return services
-            .AddDbContext<RubbergodServiceContext>(opt => opt.EnableSensitiveDataLogging().EnableDetailedErrors().EnableThreadSafetyChecks().UseNpgsql(connectionString))
+            .AddDbContext<RubbergodServiceContext>(opt => opt.EnableSensitiveDataLogging().EnableDetailedErrors().EnableThreadSafetyChecks().UseNpgsql(connString))
             .AddScoped<RubbergodServiceRepository>();
     }
 
