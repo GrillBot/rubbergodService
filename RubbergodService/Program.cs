@@ -1,6 +1,7 @@
 using RubbergodService.Data;
 using RubbergodService.Data.Discord;
 using RubbergodService.Data.Repository;
+using RubbergodService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +12,12 @@ builder.Services
     .AddDiscord()
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
-    .AddDirectApi();
+    .AddDirectApi()
+    .AddScoped<RequestCounterMiddleware>();
 builder.Services.AddControllers();
 
 var app = builder.Build();
+app.UseMiddleware<RequestCounterMiddleware>();
 
 app.Services.GetRequiredService<DiscordLogManager>();
 using var scope = app.Services.CreateScope();

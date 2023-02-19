@@ -26,7 +26,8 @@ public static class DataExtensions
     {
         services
             .AddScoped<KarmaManager>()
-            .AddScoped<UserManager>();
+            .AddScoped<UserManager>()
+            .AddSingleton<DiagnosticManager>();
         return services;
     }
 
