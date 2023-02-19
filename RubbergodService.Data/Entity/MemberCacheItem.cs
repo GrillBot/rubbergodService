@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RubbergodService.Data.Entity;
 
-[Index(nameof(InsertedAt), Name = "IX_MembeCacheItem_InsertedAt")]
 public class MemberCacheItem
 {
     [Key]
@@ -23,6 +22,4 @@ public class MemberCacheItem
 
     [Required]
     public string AvatarUrl { get; set; } = null!;
-
-    public DateTime InsertedAt { get; set; }
 }
