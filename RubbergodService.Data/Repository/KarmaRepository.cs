@@ -18,6 +18,9 @@ public class KarmaRepository : RepositoryBase
 
     public async Task<PaginatedResponse<Karma>> GetKarmaPageAsync(PaginatedParams parameters)
     {
-        return await PaginatedResponse<Karma>.CreateWithEntityAsync(Context.Karma.AsNoTracking(), parameters);
+        var query = Context.Karma.AsNoTracking()
+            .OrderByDescending(o => o.KarmaValue);
+        
+        return await PaginatedResponse<Karma>.CreateWithEntityAsync(query, parameters);
     }
 }
