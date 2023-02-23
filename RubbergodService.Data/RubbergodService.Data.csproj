@@ -10,9 +10,14 @@
       <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="6.0.2" />
       <PackageReference Include="Discord.Net.Rest" Version="3.9.0" />
       <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.AspNetCore.Routing.Abstractions" />
     </ItemGroup>
 
 </Project>

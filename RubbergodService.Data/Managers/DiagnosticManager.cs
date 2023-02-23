@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using RubbergodService.Data.Models.Diagnostics;
 
 namespace RubbergodService.Data.Managers;
@@ -16,7 +17,7 @@ public class DiagnosticManager
 
     public async Task OnRequestEndAsync(HttpContext context, DateTime startAt)
     {
-        var url = context.Request.Path.ToString();
+        var url = GetRouteTemplate(context);
         var duration = Convert.ToInt32((DateTime.Now - startAt).TotalMilliseconds);
 
         await Semaphore.WaitAsync();
@@ -38,6 +39,15 @@ public class DiagnosticManager
         {
             Semaphore.Release();
         }
+    }
+
+    private static string GetRouteTemplate(HttpContext context)
+    {
+        var url = context.Request.Path.ToString();
+
+        foreach (var routeItem in context.GetRouteData().Values.Where(o => o.Value != null))
+            url = url.Replace(routeItem.Value.ToString()!, $"{{{routeItem.Key}}}");
+        return url;
     }
 
     public DiagnosticInfo GetInfo()
