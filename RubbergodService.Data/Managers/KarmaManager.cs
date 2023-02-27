@@ -1,4 +1,5 @@
 ﻿using RubbergodService.Data.Entity;
+using RubbergodService.Data.MemberSynchronization;
 using RubbergodService.Data.Models.Common;
 using RubbergodService.Data.Models.Karma;
 using RubbergodService.Data.Repository;
@@ -8,18 +9,18 @@ namespace RubbergodService.Data.Managers;
 public class KarmaManager
 {
     private RubbergodServiceRepository Repository { get; }
-    private UserManager UserManager { get; }
+    private MemberSyncQueue MemberSyncQueue { get; }
 
-    public KarmaManager(RubbergodServiceRepository repository, UserManager userManager)
+    public KarmaManager(RubbergodServiceRepository repository, MemberSyncQueue memberSyncQueue)
     {
         Repository = repository;
-        UserManager = userManager;
+        MemberSyncQueue = memberSyncQueue;
     }
 
     public async Task StoreKarmaAsync(List<Karma> items)
     {
         foreach (var memberId in items.Select(o => o.MemberId).Distinct())
-            await UserManager.InitMemberAsync(memberId);
+            await MemberSyncQueue.AddToQueueAsync(memberId);
 
         foreach (var item in items)
         {

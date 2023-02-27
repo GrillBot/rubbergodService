@@ -7,6 +7,7 @@ using RubbergodService.Data.DirectApi;
 using RubbergodService.Data.Discord;
 using RubbergodService.Data.Entity;
 using RubbergodService.Data.Managers;
+using RubbergodService.Data.MemberSynchronization;
 using RubbergodService.Data.Repository;
 
 namespace RubbergodService.Data;
@@ -53,6 +54,14 @@ public static class DataExtensions
         services
             .AddSingleton<IDirectApiClient, DirectApiClient>()
             .AddScoped<DirectApiManager>();
+        return services;
+    }
+
+    public static IServiceCollection AddMemberSync(this IServiceCollection services)
+    {
+        services
+            .AddSingleton<MemberSyncQueue>()
+            .AddHostedService<MemberSyncService>();
         return services;
     }
 }

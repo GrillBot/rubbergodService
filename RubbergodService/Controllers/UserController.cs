@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RubbergodService.Data.Managers;
+using RubbergodService.Data.MemberSynchronization;
 
 namespace RubbergodService.Controllers;
 
@@ -7,18 +7,18 @@ namespace RubbergodService.Controllers;
 [Route("api/user")]
 public class UserController : Controller
 {
-    private UserManager UserManager { get; }
+    private MemberSyncQueue MemberSyncQueue { get; }
 
-    public UserController(UserManager userManager)
+    public UserController(MemberSyncQueue memberSyncQueue)
     {
-        UserManager = userManager;
+        MemberSyncQueue = memberSyncQueue;
     }
 
     [HttpPatch("{memberId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> RefreshUserAsync(string memberId)
     {
-        await UserManager.InitMemberAndCommitAsync(memberId);
+        await MemberSyncQueue.AddToQueueAsync(memberId);
         return Ok();
     }
 }

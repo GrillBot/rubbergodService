@@ -14,7 +14,8 @@ builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
     .AddDirectApi()
-    .AddScoped<RequestCounterMiddleware>();
+    .AddScoped<RequestCounterMiddleware>()
+    .AddMemberSync();
 builder.Services.AddControllers();
 
 builder.Services
