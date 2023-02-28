@@ -15,7 +15,8 @@ builder.Services
     .AddSwaggerGen()
     .AddDirectApi()
     .AddScoped<RequestCounterMiddleware>()
-    .AddMemberSync();
+    .AddMemberSync()
+    .AddMemoryCache();
 builder.Services.AddControllers();
 
 builder.Services
