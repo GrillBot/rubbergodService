@@ -47,7 +47,7 @@ public class DiagnosticManager
 
         foreach (var routeItem in context.GetRouteData().Values.Where(o => o.Value != null))
             url = url.Replace(routeItem.Value.ToString()!, $"{{{routeItem.Key}}}");
-        return url;
+        return $"{context.Request.Method} {url}";
     }
 
     public DiagnosticInfo GetInfo()
