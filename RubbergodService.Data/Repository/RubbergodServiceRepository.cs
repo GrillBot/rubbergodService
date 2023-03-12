@@ -6,30 +6,19 @@ namespace RubbergodService.Data.Repository;
 public sealed class RubbergodServiceRepository : IDisposable, IAsyncDisposable
 {
     private RubbergodServiceContext Context { get; set; }
-    private List<RepositoryBase> Repositories { get; set; } = new();
 
     public RubbergodServiceRepository(RubbergodServiceContext context)
     {
         Context = context;
+
+        Karma = new KarmaRepository(Context);
+        MemberCache = new MemberCacheRepository(Context);
+        Statistics = new StatisticsRepository(Context);
     }
 
-    public KarmaRepository Karma => GetOrCreateRepository<KarmaRepository>();
-    public MemberCacheRepository MemberCache => GetOrCreateRepository<MemberCacheRepository>();
-
-    private TRepository GetOrCreateRepository<TRepository>() where TRepository : RepositoryBase
-    {
-        var repository = Repositories.OfType<TRepository>().FirstOrDefault();
-        if (repository != null)
-            return repository;
-
-        repository = Activator.CreateInstance(typeof(TRepository), Context) as TRepository;
-        if (repository == null)
-            throw new InvalidOperationException($"Error while creating repository {typeof(TRepository).Name}");
-
-        Repositories.Add(repository);
-
-        return repository;
-    }
+    public KarmaRepository Karma { get; }
+    public MemberCacheRepository MemberCache { get; }
+    public StatisticsRepository Statistics { get; }
 
     public Task AddAsync<TEntity>(TEntity entity) where TEntity : class
         => Context.Set<TEntity>().AddAsync(entity).AsTask();
@@ -57,16 +46,10 @@ public sealed class RubbergodServiceRepository : IDisposable, IAsyncDisposable
         Context.ChangeTracker.Clear();
         Context.Dispose();
         Context = null!;
-
-        Repositories.Clear();
-        Repositories = null!;
     }
 
     public async ValueTask DisposeAsync()
     {
-        Repositories.Clear();
-        Repositories = null!;
-
         Context.ChangeTracker.Clear();
         await Context.DisposeAsync();
         Context = null!;

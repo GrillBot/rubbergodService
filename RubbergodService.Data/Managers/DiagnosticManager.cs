@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using RubbergodService.Data.Models.Diagnostics;
+using RubbergodService.Data.Repository;
 
 namespace RubbergodService.Data.Managers;
 
@@ -9,10 +11,12 @@ public class DiagnosticManager
 {
     private SemaphoreSlim Semaphore { get; }
     private List<RequestStatistics> Statistics { get; } = new();
+    private IServiceProvider ServiceProvider { get; }
 
-    public DiagnosticManager()
+    public DiagnosticManager(IServiceProvider serviceProvider)
     {
         Semaphore = new SemaphoreSlim(1);
+        ServiceProvider = serviceProvider;
     }
 
     public async Task OnRequestEndAsync(HttpContext context, DateTime startAt)
@@ -50,7 +54,7 @@ public class DiagnosticManager
         return $"{context.Request.Method} {url}";
     }
 
-    public DiagnosticInfo GetInfo()
+    public async Task<DiagnosticInfo> GetInfoAsync()
     {
         var process = Process.GetCurrentProcess();
 
@@ -61,7 +65,17 @@ public class DiagnosticManager
             Version = GetType().Assembly.GetName().Version!.ToString(),
             MeasuredFrom = process.StartTime,
             RequestsCount = Statistics.Sum(o => o.Count),
-            UsedMemory = process.WorkingSet64
+            UsedMemory = process.WorkingSet64,
+            CpuTime = Convert.ToInt64(process.TotalProcessorTime.TotalMilliseconds),
+            Database = await GetDatabaseStatisticsAsync()
         };
+    }
+
+    private async Task<Dictionary<string, long>> GetDatabaseStatisticsAsync()
+    {
+        using var scope = ServiceProvider.CreateScope();
+
+        var repository = scope.ServiceProvider.GetRequiredService<RubbergodServiceRepository>();
+        return await repository.Statistics.GetStatisticsAsync();
     }
 }
